@@ -20,17 +20,16 @@
 
         {{-- Email --}}
         <div class="form-group">
-            <label for="email" class="form-label">Email Address</label>
+            <label for="email" class="form-label">Email or Login ID</label>
             <input
                 id="email"
                 name="email"
-                type="email"
+                type="text"
                 class="form-input @error('email') border-state-error focus:ring-state-error/30 @enderror"
-                placeholder="you@example.com"
+                placeholder="you@example.com or DOM1001"
                 value="{{ old('email') }}"
                 required
                 autofocus
-                autocomplete="username"
             >
             @error('email')
                 <p class="form-error">{{ $message }}</p>
