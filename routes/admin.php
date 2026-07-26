@@ -32,6 +32,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])
     Route::resource('users', UserController::class)->except(['create', 'store']);
     Route::patch('/users/{user}/suspend',  [UserController::class, 'suspend'])->name('users.suspend');
     Route::patch('/users/{user}/activate', [UserController::class, 'activate'])->name('users.activate');
+    Route::patch('/users/{user}/toggle-membership', [UserController::class, 'toggleMembership'])->name('users.toggle-membership');
 
     // Courses
     Route::resource('courses', CourseController::class);

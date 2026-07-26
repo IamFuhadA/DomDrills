@@ -38,13 +38,34 @@ class UserController extends Controller
 
     public function suspend(User $user): RedirectResponse
     {
-        // TODO: $user->update(['suspended_at' => now()]);
-        return back()->with('success', 'User suspended.');
+        $user->update(['suspended_at' => now()]);
+        return back()->with('success', 'User account suspended.');
     }
 
     public function activate(User $user): RedirectResponse
     {
-        // TODO: $user->update(['suspended_at' => null]);
-        return back()->with('success', 'User activated.');
+        $user->update(['suspended_at' => null]);
+        return back()->with('success', 'User account activated.');
+    }
+
+    public function toggleMembership(User $user): RedirectResponse
+    {
+        $active = $user->activeMembership;
+
+        if ($active) {
+            $active->update(['status' => 'expired']);
+            return back()->with('success', 'Membership revoked.');
+        }
+
+        $plan = \App\Models\MembershipPlan::first();
+        if ($plan) {
+            $user->memberships()->create([
+                'membership_plan_id' => $plan->id,
+                'status' => 'active',
+                'expires_at' => now()->addYears(1),
+            ]);
+        }
+
+        return back()->with('success', 'Active membership granted for 1 year.');
     }
 }

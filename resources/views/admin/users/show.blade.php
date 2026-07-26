@@ -32,9 +32,24 @@
                 </div>
 
                 <div class="border-t border-border pt-5 space-y-4">
-                    <h3 class="font-heading font-semibold text-charcoal text-base">Account Security & Actions</h3>
+                    <h3 class="font-heading font-semibold text-charcoal text-base">Membership & Status Actions</h3>
                     
                     <div class="flex flex-wrap gap-3">
+                        {{-- Toggle Membership --}}
+                        <form method="POST" action="{{ route('admin.users.toggle-membership', $user) }}">
+                            @csrf
+                            @method('PATCH')
+                            @if($user->activeMembership()->exists())
+                                <button type="submit" class="btn-primary bg-state-error/10 hover:bg-state-error/20 border-state-error/20 text-state-error btn-sm">
+                                    Revoke Membership Access
+                                </button>
+                            @else
+                                <button type="submit" class="btn-primary bg-brand hover:bg-brand-hover text-white border-brand btn-sm">
+                                    Grant Active Membership (1 Year)
+                                </button>
+                            @endif
+                        </form>
+
                         @if($user->isSuspended())
                             <form method="POST" action="{{ route('admin.users.activate', $user) }}">
                                 @csrf
