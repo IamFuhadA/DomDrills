@@ -1,49 +1,59 @@
 <x-layouts.admin>
-    <x-slot name="title">Memberships Management</x-slot>
-    <x-slot name="pageTitle">Memberships</x-slot>
+    <x-slot name="title">Membership Plans Management</x-slot>
+    <x-slot name="pageTitle">Membership Plans</x-slot>
 
-    <div class="mb-6">
-        <h1 class="font-heading font-bold text-2xl text-charcoal">Memberships</h1>
-        <p class="text-charcoal-muted text-xs">Manage active and inactive subscriptions across plans.</p>
+    <div class="mb-6 flex justify-between items-center">
+        <div>
+            <h1 class="font-heading font-bold text-2xl text-charcoal">Membership Tiers</h1>
+            <p class="text-charcoal-muted text-xs">Create, edit and manage client subscription tiers, pricing and features lists.</p>
+        </div>
+        <a href="{{ route('admin.memberships.create') }}" class="btn-primary btn-sm flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+            Create Plan
+        </a>
     </div>
 
+    @if(session('success'))
+        <div class="alert-success mb-6" role="alert">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            {{ session('success') }}
+        </div>
+    @endif
+
+    {{-- Plans Grid --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        @foreach([
-            ['name' => 'Monthly Tier', 'count' => '0 active', 'price' => '₹1,999/mo'],
-            ['name' => 'Quarterly Tier', 'count' => '1 active', 'price' => '₹4,999/quarter'],
-            ['name' => 'Yearly Tier', 'count' => '0 active', 'price' => '₹14,999/yr'],
-        ] as $plan)
-        <div class="card p-5">
-            <span class="text-xs text-charcoal-muted uppercase font-bold tracking-widest block mb-2">{{ $plan['name'] }}</span>
-            <span class="font-heading font-bold text-xl text-charcoal block mb-1">{{ $plan['price'] }}</span>
-            <span class="text-xs text-state-success font-semibold">{{ $plan['count'] }}</span>
+        @foreach($plans as $plan)
+        <div class="card p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-charcoal-muted uppercase font-bold tracking-widest">{{ $plan->name }}</span>
+                    <span class="badge-brand capitalize text-3xs">{{ $plan->billing_period }}</span>
+                </div>
+                <span class="font-heading font-bold text-2xl text-charcoal block mb-2">₹{{ number_format($plan->price) }}</span>
+                <p class="text-charcoal-muted text-xs mb-4 leading-relaxed line-clamp-3">{{ $plan->description }}</p>
+                
+                @if(!empty($plan->features))
+                    <ul class="space-y-2 mb-6">
+                        @foreach($plan->features as $feature)
+                        <li class="flex items-center gap-2 text-2xs text-charcoal-muted">
+                            <svg class="w-3.5 h-3.5 text-brand flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            {{ $feature }}
+                        </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
+
+            <div class="border-t border-border pt-4 flex gap-3">
+                <a href="{{ route('admin.memberships.edit', $plan->id) }}" class="btn-outline-brand btn-xs flex-1 justify-center text-center">Edit Plan</a>
+                
+                <form method="POST" action="{{ route('admin.memberships.destroy', $plan->id) }}" class="flex-1" onsubmit="return confirm('Are you sure you want to delete this plan?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn-primary bg-state-error/10 hover:bg-state-error/20 border-state-error/20 text-state-error btn-xs w-full justify-center">Delete</button>
+                </form>
+            </div>
         </div>
         @endforeach
-    </div>
-
-    <div class="card overflow-hidden">
-        <div class="px-6 py-4.5 border-b border-border">
-            <h2 class="font-heading font-semibold text-charcoal text-base">Active Memberships List</h2>
-        </div>
-        <div class="overflow-x-auto">
-            <table class="table-base">
-                <thead>
-                    <tr>
-                        <th>Member</th>
-                        <th>Plan</th>
-                        <th>Status</th>
-                        <th>Renews/Expires</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="font-semibold text-charcoal text-sm">John Doe (student@domdrills.com)</td>
-                        <td>Quarterly Tier</td>
-                        <td><span class="badge-success">Active</span></td>
-                        <td class="text-xs text-charcoal-muted">In 3 months</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
     </div>
 </x-layouts.admin>
