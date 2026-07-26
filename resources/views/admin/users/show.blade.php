@@ -80,17 +80,23 @@
 
                 {{-- Send / Reset Credentials --}}
                 <div class="border-t border-border pt-5 space-y-4 mt-6">
-                    <h3 class="font-heading font-semibold text-charcoal text-base">Send / Reset Login Credentials</h3>
-                    <p class="text-charcoal-muted text-xs">Set a password for the student and email their login ID (email) and password to them. This will also grant them active membership access if not already active.</p>
+                    <h3 class="font-heading font-semibold text-charcoal text-base">Generate Student Login ID</h3>
+                    <p class="text-charcoal-muted text-xs">Create a unique Login ID (Username or custom Code) for this student. The system will email this Login ID along with the student's original registered password to their registered email address.</p>
                     
+                    <div class="text-xs p-3 bg-charcoal/5 rounded border border-border">
+                        <strong>Registered Password (plain):</strong> 
+                        <code class="text-brand font-mono">{{ $user->password_plain ?? 'Not available' }}</code>
+                    </div>
+
                     <form method="POST" action="{{ route('admin.users.send-credentials', $user) }}" class="space-y-4 max-w-md">
                         @csrf
                         <div class="form-group">
-                            <label for="new_login_password" class="form-label text-xs font-semibold text-charcoal">Set Login Password</label>
-                            <input id="new_login_password" name="password" type="text" class="form-input text-xs" placeholder="Type a password to send" required>
+                            <label for="new_login_id" class="form-label text-xs font-semibold text-charcoal">Create Login ID</label>
+                            <input id="new_login_id" name="login_id" type="text" class="form-input text-xs" value="{{ old('login_id', $user->login_id) }}" placeholder="e.g. DOM{{ 1000 + $user->id }}" required>
+                            @error('login_id')<p class="form-error mt-1 text-state-error text-2xs">{{ $message }}</p>@enderror
                         </div>
                         <button type="submit" class="btn-primary btn-sm bg-brand border-brand hover:bg-brand-hover text-white">
-                            Set Password & Email Credentials
+                            Save ID & Email Credentials
                         </button>
                     </form>
                 </div>

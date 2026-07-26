@@ -24,17 +24,21 @@ class DatabaseSeeder extends Seeder
         $admin = User::create([
             'name' => 'DomDrills Admin',
             'email' => 'admin@domdrills.com',
+            'login_id' => 'admin101',
             'email_verified_at' => now(),
             'password' => Hash::make('password'),
+            'password_plain' => 'password',
             'role' => 'admin',
         ]);
-
+ 
         // 2. Seed default student user
         $student = User::create([
             'name' => 'John Doe',
             'email' => 'student@domdrills.com',
+            'login_id' => 'student101',
             'email_verified_at' => now(),
             'password' => Hash::make('password'),
+            'password_plain' => 'password',
             'role' => 'student',
         ]);
 
