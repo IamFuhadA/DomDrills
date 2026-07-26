@@ -77,6 +77,23 @@
                         </form>
                     </div>
                 </div>
+
+                {{-- Send / Reset Credentials --}}
+                <div class="border-t border-border pt-5 space-y-4 mt-6">
+                    <h3 class="font-heading font-semibold text-charcoal text-base">Send / Reset Login Credentials</h3>
+                    <p class="text-charcoal-muted text-xs">Set a password for the student and email their login ID (email) and password to them. This will also grant them active membership access if not already active.</p>
+                    
+                    <form method="POST" action="{{ route('admin.users.send-credentials', $user) }}" class="space-y-4 max-w-md">
+                        @csrf
+                        <div class="form-group">
+                            <label for="new_login_password" class="form-label text-xs font-semibold text-charcoal">Set Login Password</label>
+                            <input id="new_login_password" name="password" type="text" class="form-input text-xs" placeholder="Type a password to send" required>
+                        </div>
+                        <button type="submit" class="btn-primary btn-sm bg-brand border-brand hover:bg-brand-hover text-white">
+                            Set Password & Email Credentials
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
 

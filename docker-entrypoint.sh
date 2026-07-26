@@ -1,9 +1,10 @@
 #!/bin/sh
 
-# Cache configuration, routes, and views for production performance
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+# Clear config, route, and view caches to force Laravel to read fresh Render env variables
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+php artisan cache:clear
 
 # Run database migrations and seeders automatically on startup
 php artisan migrate --force

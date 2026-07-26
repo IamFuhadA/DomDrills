@@ -33,6 +33,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])
     Route::patch('/users/{user}/suspend',  [UserController::class, 'suspend'])->name('users.suspend');
     Route::patch('/users/{user}/activate', [UserController::class, 'activate'])->name('users.activate');
     Route::patch('/users/{user}/toggle-membership', [UserController::class, 'toggleMembership'])->name('users.toggle-membership');
+    Route::post('/users/{user}/send-credentials', [UserController::class, 'sendCredentials'])->name('users.send-credentials');
 
     // Courses
     Route::resource('courses', CourseController::class);

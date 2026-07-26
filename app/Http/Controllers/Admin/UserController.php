@@ -68,4 +68,52 @@ class UserController extends Controller
 
         return back()->with('success', 'Active membership granted for 1 year.');
     }
+
+    public function sendCredentials(Request $request, User $user): RedirectResponse
+    {
+        $validated = $request->validate([
+            'password' => ['required', 'string', 'min:6'],
+        ]);
+
+        // 1. Update password
+        $user->update([
+            'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+        ]);
+
+        // 2. Grant active membership if they don't have one
+        if (!$user->activeMembership()->exists()) {
+            $plan = \App\Models\MembershipPlan::first();
+            if ($plan) {
+                $user->memberships()->create([
+                    'membership_plan_id' => $plan->id,
+                    'status' => 'active',
+                    'expires_at' => now()->addYears(1),
+                ]);
+            }
+        }
+
+        // 3. Send Credentials via Mail
+        $mailSent = false;
+        try {
+            \Illuminate\Support\Facades\Mail::raw(
+                "Hello {$user->name},\n\nYour account on DomDrills has been approved and activated!\n\nHere are your login credentials:\nLogin ID (Email): {$user->email}\nPassword: {$validated['password']}\n\nYou can log in at: " . route('login') . "\n\nBest regards,\nDomDrills Team",
+                function ($message) use ($user) {
+                    $message->to($user->email)->subject('DomDrills Account Activated - Credentials');
+                }
+            );
+            $mailSent = true;
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to send credentials mail: " . $e->getMessage());
+            \Illuminate\Support\Facades\Log::info("MOCK CREDENTIAL MAIL TO {$user->email} - Password: {$validated['password']}");
+        }
+
+        $msg = 'Credentials updated successfully and active membership granted.';
+        if ($mailSent) {
+            $msg .= ' Welcome email sent to student.';
+        } else {
+            $msg .= ' (Email logged locally; SMTP server pending configuration).';
+        }
+
+        return back()->with('success', $msg);
+    }
 }
