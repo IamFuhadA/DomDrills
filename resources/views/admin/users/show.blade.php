@@ -81,23 +81,30 @@
                 {{-- Send / Reset Credentials --}}
                 <div class="border-t border-border pt-5 space-y-4 mt-6">
                     <h3 class="font-heading font-semibold text-charcoal text-base">Generate Student Login ID</h3>
-                    <p class="text-charcoal-muted text-xs">Create a unique Login ID (Username or custom Code) for this student. The system will email this Login ID along with the student's original registered password to their registered email address.</p>
+                    <p class="text-charcoal-muted text-xs">Automatically generate a unique Login ID for this student. The system will email this Login ID along with the student's original registered password to their registered email address.</p>
                     
-                    <div class="text-xs p-3 bg-charcoal/5 rounded border border-border">
-                        <strong>Registered Password (plain):</strong> 
-                        <code class="text-brand font-mono">{{ $user->password_plain ?? 'Not available' }}</code>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="text-xs p-3 bg-charcoal/5 rounded border border-border space-y-1">
+                            <span class="text-charcoal-muted block">Expected Login ID:</span>
+                            <strong class="text-charcoal text-sm font-mono">DOM{{ 1000 + $user->id }}</strong>
+                        </div>
+                        <div class="text-xs p-3 bg-charcoal/5 rounded border border-border space-y-1">
+                            <span class="text-charcoal-muted block">Registered Password (plain):</span>
+                            <strong class="text-brand text-sm font-mono">{{ $user->password_plain ?? 'Not available' }}</strong>
+                        </div>
                     </div>
 
-                    <form method="POST" action="{{ route('admin.users.send-credentials', $user) }}" class="space-y-4 max-w-md">
+                    <form method="POST" action="{{ route('admin.users.send-credentials', $user) }}">
                         @csrf
-                        <div class="form-group">
-                            <label for="new_login_id" class="form-label text-xs font-semibold text-charcoal">Create Login ID</label>
-                            <input id="new_login_id" name="login_id" type="text" class="form-input text-xs" value="{{ old('login_id', $user->login_id) }}" placeholder="e.g. DOM{{ 1000 + $user->id }}" required>
-                            @error('login_id')<p class="form-error mt-1 text-state-error text-2xs">{{ $message }}</p>@enderror
-                        </div>
-                        <button type="submit" class="btn-primary btn-sm bg-brand border-brand hover:bg-brand-hover text-white">
-                            Save ID & Email Credentials
-                        </button>
+                        @if($user->login_id)
+                            <button type="submit" class="btn-primary btn-sm bg-brand border-brand hover:bg-brand-hover text-white">
+                                Resend Login ID & Credentials Email
+                            </button>
+                        @else
+                            <button type="submit" class="btn-primary btn-sm bg-brand border-brand hover:bg-brand-hover text-white">
+                                Generate ID & Send Credentials
+                            </button>
+                        @endif
                     </form>
                 </div>
             </div>

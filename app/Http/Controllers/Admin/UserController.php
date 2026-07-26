@@ -71,16 +71,15 @@ class UserController extends Controller
 
     public function sendCredentials(Request $request, User $user): RedirectResponse
     {
-        $validated = $request->validate([
-            'login_id' => ['required', 'string', 'min:3', 'unique:users,login_id,' . $user->id],
-        ]);
+        // 1. Generate unique Login ID in DOMXXXX format
+        $loginId = 'DOM' . (1000 + $user->id);
 
-        // 1. Save Login ID
+        // 2. Save Login ID
         $user->update([
-            'login_id' => $validated['login_id'],
+            'login_id' => $loginId,
         ]);
 
-        // 2. Grant active membership if they don't have one
+        // 3. Grant active membership if they don't have one
         if (!$user->activeMembership()->exists()) {
             $plan = \App\Models\MembershipPlan::first();
             if ($plan) {
@@ -92,12 +91,12 @@ class UserController extends Controller
             }
         }
 
-        // 3. Send Credentials via Mail
+        // 4. Send Credentials via Mail
         $passwordPlain = $user->password_plain ?? 'Your registered password';
         $mailSent = false;
         try {
             \Illuminate\Support\Facades\Mail::raw(
-                "Hello {$user->name},\n\nYour account on DomDrills has been approved and activated!\n\nHere are your login credentials:\nLogin ID: {$validated['login_id']}\nPassword: {$passwordPlain}\n\nYou can log in at: " . route('login') . "\n\nBest regards,\nDomDrills Team",
+                "Hello {$user->name},\n\nYour account on DomDrills has been approved and activated!\n\nHere are your login credentials:\nLogin ID: {$loginId}\nPassword: {$passwordPlain}\n\nYou can log in at: " . route('login') . "\n\nBest regards,\nDomDrills Team",
                 function ($message) use ($user) {
                     $message->to($user->email)->subject('DomDrills Account Activated - Credentials');
                 }
@@ -105,10 +104,10 @@ class UserController extends Controller
             $mailSent = true;
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Failed to send credentials mail: " . $e->getMessage());
-            \Illuminate\Support\Facades\Log::info("MOCK CREDENTIAL MAIL TO {$user->email} - Login ID: {$validated['login_id']}, Password: {$passwordPlain}");
+            \Illuminate\Support\Facades\Log::info("MOCK CREDENTIAL MAIL TO {$user->email} - Login ID: {$loginId}, Password: {$passwordPlain}");
         }
 
-        $msg = 'Student Login ID created successfully and active membership granted.';
+        $msg = 'Student Login ID (' . $loginId . ') generated successfully and active membership granted.';
         if ($mailSent) {
             $msg .= ' Welcome email sent to student.';
         } else {
