@@ -55,6 +55,8 @@
                     <a href="{{ route('register') }}" class="btn-secondary w-full justify-center">Get Started</a>
                 </div>
             </div>
+
+            <x-caution-message class="mt-12 max-w-5xl mx-auto" />
         </div>
     </section>
 </x-layouts.public>

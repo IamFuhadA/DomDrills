@@ -81,16 +81,12 @@
                 {{-- Send / Reset Credentials --}}
                 <div class="border-t border-border pt-5 space-y-4 mt-6">
                     <h3 class="font-heading font-semibold text-charcoal text-base">Generate Student Login ID</h3>
-                    <p class="text-charcoal-muted text-xs">Automatically generate a unique Login ID for this student. The system will email this Login ID along with the student's original registered password to their registered email address.</p>
+                    <p class="text-charcoal-muted text-xs">Automatically generate a unique Login ID for this student. The system emails the Login ID with a secure password reset link, never a stored plaintext password.</p>
                     
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 gap-4">
                         <div class="text-xs p-3 bg-charcoal/5 rounded border border-border space-y-1">
                             <span class="text-charcoal-muted block">Expected Login ID:</span>
                             <strong class="text-charcoal text-sm font-mono">DOM{{ 1000 + $user->id }}</strong>
-                        </div>
-                        <div class="text-xs p-3 bg-charcoal/5 rounded border border-border space-y-1">
-                            <span class="text-charcoal-muted block">Registered Password (plain):</span>
-                            <strong class="text-brand text-sm font-mono">{{ $user->password_plain ?? 'Not available' }}</strong>
                         </div>
                     </div>
 
@@ -98,11 +94,11 @@
                         @csrf
                         @if($user->login_id)
                             <button type="submit" class="btn-primary btn-sm bg-brand border-brand hover:bg-brand-hover text-white">
-                                Resend Login ID & Credentials Email
+                                Resend Login ID & Reset Link
                             </button>
                         @else
                             <button type="submit" class="btn-primary btn-sm bg-brand border-brand hover:bg-brand-hover text-white">
-                                Generate ID & Send Credentials
+                                Generate ID & Send Reset Link
                             </button>
                         @endif
                     </form>

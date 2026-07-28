@@ -27,9 +27,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'role'       => CheckRole::class,
         ]);
 
-        // Throttle auth attempts (rate limiting)
-        $middleware->throttleWithRedis();
-
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, Request $request) {

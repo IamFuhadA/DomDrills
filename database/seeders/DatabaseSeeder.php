@@ -27,7 +27,6 @@ class DatabaseSeeder extends Seeder
             'login_id' => 'admin101',
             'email_verified_at' => now(),
             'password' => Hash::make('password'),
-            'password_plain' => 'password',
             'role' => 'admin',
         ]);
  
@@ -38,7 +37,6 @@ class DatabaseSeeder extends Seeder
             'login_id' => 'student101',
             'email_verified_at' => now(),
             'password' => Hash::make('password'),
-            'password_plain' => 'password',
             'role' => 'student',
         ]);
 

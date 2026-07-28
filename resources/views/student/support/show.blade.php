@@ -10,6 +10,8 @@
         </a>
     </div>
 
+    <x-caution-message class="mb-6" />
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         
         {{-- Message Thread --}}

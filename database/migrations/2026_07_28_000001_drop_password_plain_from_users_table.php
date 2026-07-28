@@ -6,23 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('login_id')->nullable()->unique()->after('email');
+            if (Schema::hasColumn('users', 'password_plain')) {
+                $table->dropColumn('password_plain');
+            }
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['login_id']);
-        });
+        // Intentionally irreversible: do not recreate plaintext password storage.
     }
 };

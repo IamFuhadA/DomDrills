@@ -16,7 +16,11 @@ class CourseController extends Controller
 
     public function show(string $slug): View
     {
-        $course = \App\Models\Course::where('slug', $slug)->with('modules.lessons')->firstOrFail();
+        $course = \App\Models\Course::where('slug', $slug)
+            ->where('published', true)
+            ->with('modules.lessons')
+            ->firstOrFail();
+
         return view('student.courses.show', compact('course'));
     }
 }

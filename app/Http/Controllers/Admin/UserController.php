@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
 use Illuminate\View\View;
 
 class UserController extends Controller
@@ -91,20 +93,24 @@ class UserController extends Controller
             }
         }
 
-        // 4. Send Credentials via Mail
-        $passwordPlain = $user->password_plain ?? 'Your registered password';
+        // 4. Send Login ID with a secure password reset link.
+        $resetUrl = url(route('password.reset', [
+            'token' => Password::broker()->createToken($user),
+            'email' => $user->email,
+        ], false));
+
         $mailSent = false;
         try {
             \Illuminate\Support\Facades\Mail::raw(
-                "Hello {$user->name},\n\nYour account on DomDrills has been approved and activated!\n\nHere are your login credentials:\nLogin ID: {$loginId}\nPassword: {$passwordPlain}\n\nYou can log in at: " . route('login') . "\n\nBest regards,\nDomDrills Team",
+                "Hello {$user->name},\n\nYour DomDrills account has been approved and activated.\n\nLogin ID: {$loginId}\nSet or reset your password here: {$resetUrl}\n\nYou can log in at: " . route('login') . "\n\n----------------------------------------\nCAUTION NOTICE:\nPlease take note that all the payments are done personally. If someone impersonates us and mails or contacts you at any other time, please avoid it and contact us for verifying if it is genuine or not. For any loss by jumping into it, we are not responsible.\n----------------------------------------\n\nBest regards,\nDomDrills Team",
                 function ($message) use ($user) {
-                    $message->to($user->email)->subject('DomDrills Account Activated - Credentials');
+                    $message->to($user->email)->subject('DomDrills Account Activated');
                 }
             );
             $mailSent = true;
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Failed to send credentials mail: " . $e->getMessage());
-            \Illuminate\Support\Facades\Log::info("MOCK CREDENTIAL MAIL TO {$user->email} - Login ID: {$loginId}, Password: {$passwordPlain}");
+            \Illuminate\Support\Facades\Log::info("MOCK ACCOUNT ACTIVATION MAIL TO {$user->email} - Login ID: {$loginId}, Password reset URL: {$resetUrl}");
         }
 
         $msg = 'Student Login ID (' . $loginId . ') generated successfully and active membership granted.';

@@ -29,12 +29,17 @@ Route::middleware(['auth', 'verified', 'membership'])
 
     // Lessons
     Route::get('/lessons/{slug}',       [LessonController::class, 'show'])->name('lessons.show');
-    Route::get('/lessons/{slug}/video', [LessonController::class, 'streamVideo'])->name('lessons.video');
+    Route::get('/lessons/{slug}/video', [LessonController::class, 'streamVideo'])
+        ->middleware('signed')
+        ->name('lessons.video');
     Route::post('/lessons/{slug}/progress', [LessonController::class, 'updateProgress'])->name('lessons.progress');
 
     // Live Sessions
     Route::get('/sessions',             [SessionController::class, 'index'])->name('sessions.index');
     Route::get('/sessions/{id}',        [SessionController::class, 'show'])->name('sessions.show');
+    Route::get('/sessions/{id}/recording', [SessionController::class, 'streamRecording'])
+        ->middleware('signed')
+        ->name('sessions.recording');
 
     // Trading Tools
     Route::get('/tools',                [ToolController::class, 'index'])->name('tools.index');

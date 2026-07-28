@@ -7,12 +7,14 @@
                     <p class="section-label mb-4">Get in Touch</p>
                     <h1 class="section-title text-4xl mb-5">Have a question?</h1>
                     <p class="text-charcoal-muted text-lg leading-relaxed mb-8">Reach out and we'll respond within one business day.</p>
-                    <div class="flex items-center gap-3 text-charcoal-muted text-sm">
+                    <div class="flex items-center gap-3 text-charcoal-muted text-sm mb-6">
                         <div class="w-8 h-8 rounded-lg bg-brand/10 flex items-center justify-center flex-shrink-0">
                             <svg class="w-4 h-4 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                         </div>
                         support@domdrills.com
                     </div>
+
+                    <x-caution-message />
                 </div>
                 <form method="POST" action="{{ route('contact.submit') }}" class="card p-8 space-y-5" aria-label="Contact form">
                     @csrf

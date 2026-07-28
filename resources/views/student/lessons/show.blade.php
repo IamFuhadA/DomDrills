@@ -19,27 +19,35 @@
             </div>
 
             {{-- Secure Video Player Container --}}
-            <div class="relative rounded-2xl overflow-hidden bg-black aspect-video shadow-lg border border-charcoal/10" oncontextmenu="return false;">
+            <div id="secure-video-shell" class="relative rounded-2xl overflow-hidden bg-charcoal aspect-video shadow-lg border border-charcoal/10 select-none" oncontextmenu="return false;">
                 
                 {{-- Anti-Piracy Watermark --}}
                 <div class="absolute inset-0 pointer-events-none z-10 select-none overflow-hidden" id="video-watermark-container">
-                    <div id="video-watermark" class="absolute text-[11px] font-bold text-white/10 uppercase tracking-widest px-3 py-1 bg-black/20 rounded backdrop-blur-[1px] transition-all duration-1000 ease-in-out" style="top: 10%; left: 10%;">
-                        {{ auth()->user()->name }} ({{ auth()->user()->email }})
+                    <div id="video-watermark" class="absolute text-[11px] font-bold text-white/10 uppercase tracking-widest px-3 py-1 bg-charcoal/20 rounded backdrop-blur-[1px] transition-all duration-1000 ease-in-out" style="top: 10%; left: 10%;">
+                        {{ auth()->user()->name }} / {{ auth()->user()->email }} / {{ now()->format('d M Y H:i') }}
                     </div>
                 </div>
 
                 {{-- HTML5 Video --}}
-                <video
-                    id="secure-player"
-                    class="w-full h-full object-contain"
-                    controls
-                    controlsList="nodownload"
-                    disablePictureInPicture
-                    playsinline
-                >
-                    <source src="{{ route('student.lessons.video', $lesson->slug) }}" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
+                @if($videoUrl)
+                    <video
+                        id="secure-player"
+                        class="w-full h-full object-contain"
+                        controls
+                        controlsList="nodownload noplaybackrate noremoteplayback"
+                        disablePictureInPicture
+                        disableRemotePlayback
+                        playsinline
+                        preload="metadata"
+                    >
+                        <source src="{{ $videoUrl }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                @else
+                    <div class="absolute inset-0 flex items-center justify-center p-6 text-center">
+                        <p class="text-sm text-white/70">This lesson video is not available yet.</p>
+                    </div>
+                @endif
             </div>
 
             {{-- Lesson Info & Complete Button --}}
@@ -148,21 +156,47 @@
     @push('scripts')
     <script>
     (function() {
-        // Prevent right click on video container
+        const shell = document.getElementById('secure-video-shell');
         const player = document.getElementById('secure-player');
+
+        const blockEvent = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        };
+
+        if (shell) {
+            ['contextmenu', 'dragstart', 'selectstart'].forEach((eventName) => {
+                shell.addEventListener(eventName, blockEvent);
+            });
+        }
+
+        document.addEventListener('keydown', (event) => {
+            const key = event.key.toLowerCase();
+            const blockedCombo = (event.ctrlKey || event.metaKey) && ['s', 'u', 'p'].includes(key);
+
+            if (blockedCombo || key === 'f12' || key === 'printscreen') {
+                blockEvent(event);
+                if (key === 'printscreen' && navigator.clipboard) {
+                    navigator.clipboard.writeText('');
+                }
+            }
+        });
+
         if (player) {
-            // Disable picture-in-picture programmatically if browser supports it
             player.disablePictureInPicture = true;
+            player.disableRemotePlayback = true;
+            player.setAttribute('controlsList', 'nodownload noplaybackrate noremoteplayback');
             
-            // Randomly move the watermark to prevent static screen grabbing
             const watermark = document.getElementById('video-watermark');
             if (watermark) {
                 setInterval(() => {
-                    const top = Math.floor(Math.random() * 80) + 10;
-                    const left = Math.floor(Math.random() * 70) + 10;
+                    const top = Math.floor(Math.random() * 72) + 8;
+                    const left = Math.floor(Math.random() * 62) + 8;
                     watermark.style.top = top + '%';
                     watermark.style.left = left + '%';
-                }, 8000);
+                    watermark.style.opacity = (Math.random() * 0.08 + 0.08).toFixed(2);
+                }, 6000);
             }
         }
     })();
