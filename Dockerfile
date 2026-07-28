@@ -39,9 +39,11 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 # Install NPM dependencies and build Vite assets
 RUN npm install && npm run build
 
-# Set proper permissions for Laravel storage & bootstrap/cache
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# Set proper permissions for Laravel storage, bootstrap/cache & database
+RUN mkdir -p /var/www/html/database \
+    && touch /var/www/html/database/database.sqlite \
+    && chown -R www-data:www-data /var/www/html \
+    && chmod -R 777 /var/www/html/database /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Make docker-entrypoint script executable
 RUN chmod +x /var/www/html/docker-entrypoint.sh
